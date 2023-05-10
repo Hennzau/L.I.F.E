@@ -1,0 +1,17 @@
+[package]
+name = "life"
+version = "0.1.0"
+edition = "2021"
+
+[build-dependencies]
+nukleus = { path = "nukleus", artifact = "bin", target = "x86_64-unknown-none" }
+initium = { path = "initium", artifact = "bin", target = "x86_64-unknown-none" }
+
+[dependencies]
+synapse = { version = "0.1.0", path = "synapse" }
+
+[workspace]
+members = [
+    "nukleus",
+    "initium",
+]
