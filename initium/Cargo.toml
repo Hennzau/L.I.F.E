@@ -6,3 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+synapse = { version = "0.1.0", path = "../synapse" }
+log = "0.4.14"
+x86_64 = "0.14.8"
+uefi = "0.20.0"

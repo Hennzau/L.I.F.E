@@ -9,6 +9,13 @@ initium = { path = "initium", artifact = "bin", target = "x86_64-unknown-none" }
 
 [dependencies]
 synapse = { version = "0.1.0", path = "synapse" }
+anyhow = "1.0"
+gpt = "3.0.0"
+fatfs = { version = "0.3.6", default-features = false, features = [
+    "std",
+    "alloc",
+] }
+tempfile = "3.5.0"
 
 [workspace]
 members = [

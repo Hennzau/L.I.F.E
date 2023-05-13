@@ -1,14 +1,19 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+#![no_std]
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+pub mod optional;
+pub mod tls_template;
+pub mod framebuffer;
+pub mod memory;
+pub mod boot;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+#[macro_export]
+macro_rules! entry_point {
+    ($path:path) => {
+        #[export_name = "_start"]
+        pub extern "C" fn __impl_start(boot_info: &'static mut $crate::boot::BootInfo) -> ! {
+            let f: fn(&'static mut $crate::boot::BootInfo) -> ! = $path;
+
+            f(boot_info)
+        }
+    };
 }
