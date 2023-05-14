@@ -2,7 +2,6 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use futures::executor::block_on;
-use futures_concurrency::future::{FutureExt, Join};
 
 async fn build_initium_as_efi(out_dir: &Path) -> PathBuf {
     let cargo = std::env::var("CARGO").unwrap_or_else(|_| "cargo".into());

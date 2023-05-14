@@ -15,7 +15,7 @@ fn main() {
     let initium = PathBuf::from(env!("CARGO_BIN_FILE_INITIUM_initium"));
 
     let uefi_path = out_dir.join("uefi.img");
-    let mut uefi_boot = UefiBoot::new(&nukleus);
+    let uefi_boot = UefiBoot::new(&nukleus);
 
     uefi_boot.create_disk_image(initium.as_path(), &uefi_path).unwrap();
 
