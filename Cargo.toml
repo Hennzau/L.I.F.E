@@ -5,7 +5,9 @@ edition = "2021"
 
 [build-dependencies]
 nukleus = { path = "nukleus", artifact = "bin", target = "x86_64-unknown-none" }
-initium = { path = "initium", artifact = "bin", target = "x86_64-unknown-none" }
+async-process = "1.6.0"
+futures = "0.3.25"
+futures-concurrency = "7.0.0"
 
 [dependencies]
 synapse = { version = "0.1.0", path = "synapse" }
@@ -16,6 +18,7 @@ fatfs = { version = "0.3.6", default-features = false, features = [
     "alloc",
 ] }
 tempfile = "3.5.0"
+ovmf-prebuilt = "0.1.0-alpha.1"
 
 [workspace]
 members = [

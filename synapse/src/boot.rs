@@ -4,8 +4,8 @@ use crate::memory::MemoryRegions;
 use crate::tls_template::TlsTemplate;
 
 pub struct BootConfig {
-    pub frame_buffer_width: usize,
-    pub frame_buffer_height: usize,
+    pub framebuffer_width: usize,
+    pub framebuffer_height: usize,
 }
 
 pub struct BootInfo {
