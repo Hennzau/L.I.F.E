@@ -9,7 +9,7 @@ use tempfile::NamedTempFile;
 
 use crate::file_data::FileDataSource;
 use crate::fat_fs::create_fat_filesystem;
-use crate::gpt_fs::create_gpt_disk;
+use crate::gpt_part::create_gpt_disk;
 
 pub const KERNEL_FILE_NAME: &str = "kernel-x86_64";
 pub const BOOTLOADER_FILE_NAME: &str = "efi/boot/bootx64.efi";

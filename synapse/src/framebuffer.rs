@@ -1,3 +1,5 @@
+pub mod writer;
+
 use core::slice;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -5,6 +7,13 @@ use core::slice;
 pub enum PixelFormat {
     Rgb,
     Bgr,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Color {
+    pub red: u8,
+    pub green: u8,
+    pub blue: u8,
 }
 
 #[derive(Debug, Clone, Copy)]

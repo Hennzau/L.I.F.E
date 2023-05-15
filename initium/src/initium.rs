@@ -106,10 +106,9 @@ pub struct Mappings {
     pub stack_top: VirtAddr,
     pub used_entries: Entries,
     pub framebuffer: Option<VirtAddr>,
-    /// The start address of the physical memory mapping, if enabled.
+
     pub physical_memory_offset: Option<VirtAddr>,
-    /// The level 4 page table index of the recursive mapping, if enabled.
-    pub recursive_index: Option<PageTableIndex>,
+
     /// The thread local storage template of the kernel executable, if it contains one.
     pub tls_template: Option<TlsTemplate>,
 
@@ -227,6 +226,7 @@ pub fn set_up_mappings<I, D>(
     } else {
         None
     };
+
     let ramdisk_slice_len = system_info.ramdisk_len;
     let ramdisk_slice_start = if let Some(ramdisk_address) = system_info.ramdisk_addr {
         let start_page = mapping_addr_page_aligned(
@@ -259,13 +259,33 @@ pub fn set_up_mappings<I, D>(
         None
     };
 
+    let start_frame = PhysFrame::containing_address(PhysAddr::new(0));
+    let max_phys = frame_allocator.max_physical_address();
+    let end_frame: PhysFrame<Size2MiB> = PhysFrame::containing_address(max_phys - 1u64);
+
+    let size = max_phys.as_u64();
+    let alignment = Size2MiB::SIZE;
+    let offset = mapping_addr(size, alignment, &mut used_entries)
+        .expect("start address for physical memory mapping must be 2MiB-page-aligned");
+
+    for frame in PhysFrame::range_inclusive(start_frame, end_frame) {
+        let page = Page::containing_address(offset + frame.start_address().as_u64());
+        let flags = PageTableFlags::PRESENT | PageTableFlags::WRITABLE;
+        match unsafe { kernel_page_table.map_to(page, frame, flags, frame_allocator) } {
+            Ok(tlb) => tlb.ignore(),
+            Err(err) => panic!(
+                "failed to map page {:?} to frame {:?}: {:?}",
+                page, frame, err
+            ),
+        };
+    }
+
     Mappings {
         framebuffer: framebuffer_virt_addr,
         entry_point,
         stack_top: stack_end_addr.align_down(16u8),
         used_entries,
-        physical_memory_offset: Option::None,
-        recursive_index: Option::None,
+        physical_memory_offset: Some (offset),
         tls_template,
 
         kernel_slice_start,
@@ -360,7 +380,6 @@ pub fn create_boot_info<I, D>(
             })
             .into();
         info.physical_memory_offset = mappings.physical_memory_offset.map(VirtAddr::as_u64).into();
-        info.recursive_index = mappings.recursive_index.map(Into::into).into();
         info.rsdp_address = system_info.rsdp_addr.map(|addr| addr.as_u64()).into();
         info.tls_template = mappings.tls_template.into();
         info.ramdisk_address = mappings

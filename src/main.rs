@@ -1,11 +1,11 @@
 mod uefi;
 mod file_data;
 mod fat_fs;
-mod gpt_fs;
+mod gpt_part;
 
 mod disk_image;
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use uefi::UefiBoot;
 
