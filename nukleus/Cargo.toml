@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 synapse = { version = "0.1.0", path = "../synapse" }
+x86_64 = "0.14.8"
+linked_list_allocator = "0.10.5"

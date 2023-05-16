@@ -7,7 +7,6 @@ edition = "2021"
 
 [dependencies]
 synapse = { version = "0.1.0", path = "../synapse" }
-log = "0.4.14"
 x86_64 = "0.14.8"
 uefi = "0.20.0"
 usize_conversions = "0.2.0"

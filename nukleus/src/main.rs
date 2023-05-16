@@ -1,9 +1,17 @@
 #![no_std]
 #![no_main]
 
+extern crate alloc;
+
+mod memory;
+
+use alloc::boxed::Box;
+use x86_64::VirtAddr;
 use synapse::boot::BootInfo;
 use synapse::optional::Optional;
 use synapse::framebuffer::{Color, writer::FramebufferWriter};
+
+use crate::memory::NukleusFrameAllocator;
 
 #[panic_handler]
 fn panic(_info: &core::panic::PanicInfo) -> ! {
@@ -11,6 +19,14 @@ fn panic(_info: &core::panic::PanicInfo) -> ! {
 }
 
 fn main(boot_info: &'static mut BootInfo) -> ! {
+    let physical_memory_offset = VirtAddr::new(core::mem::replace(&mut boot_info.physical_memory_offset, Optional::None).into_option().unwrap());
+    let mut mapper = unsafe { memory::init(physical_memory_offset) };
+    let mut frame_allocator = unsafe { NukleusFrameAllocator::init(&boot_info.memory_regions) };
+
+    memory::allocator::init_heap(&mut mapper, &mut frame_allocator).expect("TODO: panic message");
+
+    let a = Box::new(9);
+
     let framebuffer = core::mem::replace(&mut boot_info.framebuffer, Optional::None).into_option().unwrap();
 
     let info = framebuffer.info;
@@ -88,6 +104,7 @@ fn main(boot_info: &'static mut BootInfo) -> ! {
         green: 0,
         blue: 0,
     });
+
 
     /* char */
 
