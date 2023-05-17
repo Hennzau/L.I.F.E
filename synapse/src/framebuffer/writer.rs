@@ -58,7 +58,25 @@ impl FramebufferWriter {
         self.draw_quad(buffer, left_x, up_y, width, height, color)
     }
 
-    fn draw_line_sud_east(&self, buffer: &mut [u8], start: (usize, usize), end: (usize, usize), color: Color) -> &Self {
+    pub fn draw_disk(&self, buffer: &mut [u8], x: usize, y: usize, radius: usize, color: Color) -> &Self {
+        let radius_squared = radius * radius;
+
+        for i in 0..radius {
+            for j in 0..radius {
+                if i * i + j * j <= radius_squared {
+                    self.write_pixel(buffer, x + i, y + j, color);
+
+                    if x as isize - i as isize >= 0 { self.write_pixel(buffer, x - i, y + j, color); }
+                    if x as isize - i as isize >= 0 && y as isize - j as isize >= 0 { self.write_pixel(buffer, x - i, y - j, color); }
+                    if y as isize - j as isize >= 0 { self.write_pixel(buffer, x + i, y - j, color); }
+                }
+            }
+        }
+
+        &self
+    }
+
+    fn draw_line_sud_east(&self, buffer: &mut [u8], start: (usize, usize), end: (usize, usize), radius: usize, color: Color) -> &Self {
         let (x_0, y_0) = start;
         let (x_1, y_1) = end;
 
@@ -67,8 +85,8 @@ impl FramebufferWriter {
 
         let (dx, dy) = (x_1 - x_0, y_1 - y_0);
 
-        self.write_pixel(buffer, x_0, y_0, color);
-        self.write_pixel(buffer, x_1, y_1, color);
+        self.draw_disk(buffer, x_0, y_0, radius, color);
+        self.draw_disk(buffer, x_1, y_1, radius, color);
 
         if dx >= dy {
             for i in 1..dx {
@@ -76,7 +94,7 @@ impl FramebufferWriter {
                 x = x_0 + i;
                 y = y_0 + t as usize;
 
-                self.write_pixel(buffer, x, y, color);
+                self.draw_disk(buffer, x, y, radius, color);
             }
         } else {
             for j in 1..dy {
@@ -84,14 +102,14 @@ impl FramebufferWriter {
                 y = y_0 + j;
                 x = x_0 + t as usize;
 
-                self.write_pixel(buffer, x, y, color);
+                self.draw_disk(buffer, x, y, radius, color);
             }
         }
 
         &self
     }
 
-    fn draw_line_north_east(&self, buffer: &mut [u8], start: (usize, usize), end: (usize, usize), color: Color) -> &Self {
+    fn draw_line_north_east(&self, buffer: &mut [u8], start: (usize, usize), end: (usize, usize), radius: usize, color: Color) -> &Self {
         let (x_0, y_0) = start;
         let (x_1, y_1) = end;
 
@@ -100,8 +118,8 @@ impl FramebufferWriter {
 
         let (dx, dy) = (x_1 - x_0, y_0 - y_1);
 
-        self.write_pixel(buffer, x_0, y_0, color);
-        self.write_pixel(buffer, x_1, y_1, color);
+        self.draw_disk(buffer, x_0, y_0, radius, color);
+        self.draw_disk(buffer, x_1, y_1, radius, color);
 
         if dx >= dy {
             for i in 1..dx {
@@ -109,7 +127,7 @@ impl FramebufferWriter {
                 x = x_0 + i;
                 y = y_0 - t as usize;
 
-                self.write_pixel(buffer, x, y, color);
+                self.draw_disk(buffer, x, y, radius, color);
             }
         } else {
             for j in 1..dy {
@@ -117,25 +135,25 @@ impl FramebufferWriter {
                 y = y_0 - j;
                 x = x_0 + t as usize;
 
-                self.write_pixel(buffer, x, y, color);
+                self.draw_disk(buffer, x, y, radius, color);
             }
         }
 
         &self
     }
 
-    pub fn draw_line(&self, buffer: &mut [u8], start: (usize, usize), end: (usize, usize), color: Color) -> &Self {
+    pub fn draw_line(&self, buffer: &mut [u8], start: (usize, usize), end: (usize, usize), radius: usize, color: Color) -> &Self {
         let (x_0, y_0) = start;
         let (x_1, y_1) = end;
 
         if x_1 >= x_0 && y_1 >= y_0 {
-            return self.draw_line_sud_east(buffer, start, end, color);
+            return self.draw_line_sud_east(buffer, start, end, radius, color);
         } else if x_1 >= x_0 && y_0 >= y_1 {
-            return self.draw_line_north_east(buffer, start, end, color);
+            return self.draw_line_north_east(buffer, start, end, radius, color);
         } else if x_0 >= x_1 && y_1 >= y_0 {
-            return self.draw_line_north_east(buffer, end, start, color);
+            return self.draw_line_north_east(buffer, end, start, radius, color);
         } else if x_0 >= x_1 && y_0 >= y_1 {
-            return self.draw_line_sud_east(buffer, end, start, color);
+            return self.draw_line_sud_east(buffer, end, start, radius, color);
         }
 
         &self

@@ -9,3 +9,5 @@ edition = "2021"
 synapse = { version = "0.1.0", path = "../synapse" }
 x86_64 = "0.14.8"
 linked_list_allocator = "0.10.5"
+
+ab_glyph = { version = "0.2.21", default-features = false, features = ["libm"] }
