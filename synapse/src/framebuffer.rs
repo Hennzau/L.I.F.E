@@ -1,5 +1,3 @@
-pub mod writer;
-
 use core::slice;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

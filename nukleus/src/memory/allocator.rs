@@ -1,6 +1,3 @@
-use alloc::alloc::{GlobalAlloc, Layout};
-use core::ptr::null_mut;
-
 use x86_64::{
     structures::paging::{
         mapper::MapToError, FrameAllocator, Mapper, Page, PageTableFlags, Size4KiB,
@@ -8,7 +5,7 @@ use x86_64::{
     VirtAddr,
 };
 
-use linked_list_allocator::{Heap, LockedHeap};
+use linked_list_allocator::LockedHeap;
 
 #[global_allocator]
 static ALLOCATOR: LockedHeap = LockedHeap::empty();

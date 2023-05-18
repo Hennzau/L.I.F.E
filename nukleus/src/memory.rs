@@ -1,5 +1,5 @@
 use x86_64::{PhysAddr, structures::paging::PageTable, VirtAddr};
-use x86_64::structures::paging::{FrameAllocator, Mapper, OffsetPageTable, Page, PhysFrame, Size4KiB};
+use x86_64::structures::paging::{FrameAllocator, OffsetPageTable, PhysFrame, Size4KiB};
 use synapse::memory::{MemoryRegionKind, MemoryRegions};
 
 pub mod allocator;
@@ -56,23 +56,4 @@ unsafe fn active_level_4_table(physical_memory_offset: VirtAddr)
 pub unsafe fn init(physical_memory_offset: VirtAddr) -> OffsetPageTable<'static> {
     let level_4_table = active_level_4_table(physical_memory_offset);
     OffsetPageTable::new(level_4_table, physical_memory_offset)
-}
-
-pub fn create_mapping(
-    page: Page,
-    physical_address: PhysAddr,
-    mapper: &mut OffsetPageTable,
-    frame_allocator: &mut impl FrameAllocator<Size4KiB>,
-) {
-    use x86_64::structures::paging::PageTableFlags as Flags;
-
-    let frame = PhysFrame::containing_address(physical_address);
-    let flags = Flags::PRESENT | Flags::WRITABLE;
-
-    let map_to_result = unsafe {
-        // FIXME: this is not safe, we do it only for testing
-        mapper.map_to(page, frame, flags, frame_allocator)
-    };
-
-    map_to_result.expect("map_to failed").flush();
 }
